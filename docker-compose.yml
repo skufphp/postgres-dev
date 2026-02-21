@@ -1,0 +1,53 @@
+services:
+  # База данных PostgreSQL
+  postgres-dev:
+    image: postgres:18.2-alpine
+    container_name: postgres-dev
+    restart: unless-stopped
+    environment:
+      # Пароль суперпользователя (берется из .env)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # (Опционально) Имя пользователя и БД по умолчанию
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    ports:
+      # Проброс порта на хост-машину (например, 7031:5432)
+      - "${DB_FORWARD_PORT}:5432"
+    volumes:
+      # Хранилище данных (сохраняется при перезапуске контейнера)
+      - postgres-data-dev:/var/lib/postgresql/data
+    networks:
+      - postgres-dev-network
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Интерфейс управления БД (pgAdmin)
+  pgadmin-dev:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-dev
+    restart: unless-stopped
+    environment:
+      # Данные для входа в панель pgAdmin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      # Отключаем мастер-пароль для удобства локальной разработки
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      # Порт для доступа к веб-интерфейсу pgAdmin (например, 7032:80)
+      - "${PGADMIN_PORT}:80"
+    networks:
+      - postgres-dev-network
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+
+volumes:
+  postgres-data-dev:
+
+networks:
+  postgres-dev-network:
+    driver: bridge
