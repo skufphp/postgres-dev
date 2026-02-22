@@ -50,4 +50,4 @@ volumes:
 
 networks:
   postgres-dev-network:
-    driver: bridge
+    name: postgres-dev-network
