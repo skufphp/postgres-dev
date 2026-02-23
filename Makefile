@@ -2,7 +2,7 @@
 # PostgreSQL & pgAdmin Docker Environment
 # ==========================================
 
-.PHONY: help up down restart logs status shell clean clean-all
+.PHONY: help up down restart logs logs-db logs-pgadmin status shell clean clean-all check-env
 
 # Цвета для вывода
 YELLOW=\033[0;33m
