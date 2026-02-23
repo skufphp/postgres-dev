@@ -11,10 +11,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
     ports:
-      # Проброс порта на хост-машину (например, 7031:5432)
+      # Проброс порта на хост-машину
       - "${DB_FORWARD_PORT}:5432"
     volumes:
-      # Хранилище данных (сохраняется при перезапуске контейнера)
+      # Хранилище данных
       - postgres-data-dev:/var/lib/postgresql/data
     networks:
       - postgres-dev-network
@@ -37,7 +37,7 @@ services:
       # Отключаем мастер-пароль для удобства локальной разработки
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
     ports:
-      # Порт для доступа к веб-интерфейсу pgAdmin (например, 7032:80)
+      # Порт для доступа к веб-интерфейсу pgAdmin
       - "${PGADMIN_PORT}:80"
     networks:
       - postgres-dev-network
